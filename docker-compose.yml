@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  nextjs:
+    container_name: simple_auth_nextjs
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    env_file: .env
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+
+  mongodb:
+    container_name: simple_auth_mongodb
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/db
+      - ./mongo-entrypoint:/docker-entrypoint-initdb.d
+    env_file: .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_USERNAME: ${MONGO_USERNAME}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_DATABASE: ${MONGO_DATABASE}
+    restart: unless-stopped
+
+volumes:
+  data:
